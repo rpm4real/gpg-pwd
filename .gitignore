@@ -1,2 +1,5 @@
 #Ignore the JSON files
 *.json
+
+#encrypted files
+*.gpg

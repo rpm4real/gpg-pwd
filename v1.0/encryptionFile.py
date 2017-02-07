@@ -42,7 +42,6 @@ class encryption_file:
 		accountBase = jsonToDict(self.accounts_file)
 		decrypt_output = self.decrypt_file()
 		accountBaseSecure = jsonToDict(self.accounts_file_secure)
-
 		return accountBase, accountBaseSecure
 
 	def unmountFiles(self,accountBase,accountBaseSecure):
@@ -50,12 +49,22 @@ class encryption_file:
 		dictToJson(accountBaseSecure, self.accounts_file_secure)
 
 		encrypt_output = encrypt_file(account_base['gpg']['account'], accounts_file_encrypted)
-
 		return None
 
+	def getService(self,serviceName):
+		if serviceName not in self.getServices():
+			raise IOError("Not a valid service")
+
+		accountBase, accountBaseSecure = self.mountFiles()
+		myServiceOutput = accountBaseSecure[serviceName]
+
+		self.unmountFiles(accountBase,accountBaseSecure)
+
+		return myServiceOutput
+
 	def addService(self, myService):
-		if mySerivice.serviceName in self.getServices():
-			return IOError("Reduntant service name")
+		if myService.serviceName in self.getServices():
+			raise IOError("Reduntant service name")
 
 		accountBase, accountBaseSecure = self.mountFiles()
 
@@ -68,13 +77,33 @@ class encryption_file:
 
 		return True
 
-	def editService(self,myService):
-		if mySerivice.serviceName not in self.getServices():
-			return IOError("No service with this name")
-
-		
-
 	def removeService(self,myService):
+		if myService.serviceName not in self.getServices():
+			raise IOError("Reduntant service name")
+
+		accountBase, accountBaseSecure = self.mountFiles()
+
+		del accountBase[myService.serviceName]
+		del accountBaseSecure[myService.serviceName]
+
+		self.unmountFiles(accountBase,accountBaseSecure)
+
+		return True
+
+
+	def editService(self,myServiceName,newAccount='',newPass='',newOther=''):
+		serviceToEdit = self.getService(myServiceName)
+		if newAccount != '':
+			serviceToEdit['account'] = newAccount
+		if newPass != '':
+			serviceToEdit['password'] = newPass
+		if newOther != '':
+			serviceToEdit['other'] = newOther
+
+		self.removeService(serviceToEdit)
+		self.addService(serviceToEdit)
+
+		return True
 
 def jsonToDict(jsonFile):
 	with open(jsonFile,'r') as filename:
@@ -97,5 +126,3 @@ class service:
 
 	#change 
 
-class 
-	

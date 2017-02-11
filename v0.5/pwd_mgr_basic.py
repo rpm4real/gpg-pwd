@@ -178,8 +178,8 @@ def remove_service(service_name,passphrase,directory=''):
 
 #This function requires direct user interaction
 #void - returns nothing (reconsider?)
-def create_storage_file(directory=''):
-	accounts = {'gpg':{'account':'rpm4real@gmail.com', 'other': 'Riley P Molloy'} }
+def create_storage_file(gpg_account, gpg_other='', directory=''):
+	accounts = {'gpg':{'account':gpg_account, 'other': gpg_other} }
 
 	if os.path.exists(directory) and directory[len(directory)-1] != '/' : 
 		raise IOError("Try again: provide a proper directory definition")
@@ -241,13 +241,15 @@ if __name__ == "__main__":
 		selected = raw_input("Choose one:")
 
 		if selected == '1':
+			gpg_account = raw_input("Please enter the account name which your GPG account is under: ")
+			gpg_other = raw_input("Other gpg info? (hit enter to skip): ")
 			directory = raw_input("Enter the directory for the storage files (default is current):")
 			if os.path.exists(directory) != True and directory != '':
 				print "Not a valid directory."
 			elif directory == '':
-				create_storage_file()
+				create_storage_file(gpg_account,gpg_other)
 			else: 
-				create_storage_file(directory=directory)
+				create_storage_file(gpg_account,gpg_other,directory=directory)
 
 		elif selected == '2':
 			service_name = raw_input("Please enter the service:")
